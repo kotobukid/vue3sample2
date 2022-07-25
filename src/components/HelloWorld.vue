@@ -7,13 +7,18 @@
     ul
         li.number(
             v-for="(n, $index) in numbers"
-            @click="increment_single($index)"
-            :class="n[1] > 0 ? 'plus' : 'minus'"
-        ) {{ n[0] }}
+            @click="increment_or_decrement_single($index)"
+            :class="n.d > 0 ? 'plus' : 'minus'"
+        ) {{ n.v }}
 </template>
 
 <script lang="ts">
 import {defineComponent, toRefs, ref, Ref} from 'vue';
+
+declare type RisingNumber = {
+    v: number,  // value
+    d: 1 | -1   // delta
+}
 
 export default defineComponent({
     props: {
@@ -22,44 +27,40 @@ export default defineComponent({
     setup(props: { msg: string }) {
         const {msg} = toRefs(props)
 
-        const numbers: Ref<[number, number][]> = ref([
-            [0, 1],
-            [0, 1],
-            [0, 1]
-        ] as [number, number][])
+        const numbers: Ref<RisingNumber[]> = ref([
+            {v: 3, d: 1},
+            {v: 6, d: 1},
+            {v: 9, d: 1}
+        ] as RisingNumber[])
 
-        const increment = (index: number) => {
-            numbers.value[index] = increment_single(index)
-        }
-
-        const increment_single = (index: number): [number, number] => {
-            const target: [number, number] = numbers.value[index]
-            target[0] = target[0] + target[1]
-            if (target[0] > 9) {
-                target[1] = -1
-            } else if (target[0] < 1) {
-                target[1] = 1
+        const increment_or_decrement_single = (index: number): RisingNumber => {
+            const target: RisingNumber = numbers.value[index]
+            target.v = target.v + target.d
+            if (target.v > 9) {
+                target.d = -1
+            } else if (target.v < 1) {
+                target.d = 1
             }
             return target
         }
 
         const plus1_each = () => {
             numbers.value = numbers.value.map((n, index) => {
-                n = increment_single(index)
+                n = increment_or_decrement_single(index)
                 return n
             })
         }
 
         const append = () => {
-            numbers.value = [...numbers.value, [0, 1]]
-            // numbers.value.push([0, 1])
+            numbers.value = [...numbers.value, {v: 0, d: 1}]
+            // numbers.value.push({v: 0. d: 1})
         }
 
         return {
             numbers,
             msg,
             append,
-            increment_single,
+            increment_or_decrement_single,
             plus1_each
         }
     }
