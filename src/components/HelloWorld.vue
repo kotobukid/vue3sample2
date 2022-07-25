@@ -3,6 +3,7 @@
     h1 {{ msg }}
 
     button.button(@click="plus1_each") +1 each
+    button.button(@click="append") append 0
     ul
         li.number(v-for="(n, $index) in numbers" @click="increment_single($index)") {{ n }}
 </template>
@@ -26,9 +27,15 @@ export default defineComponent({
             numbers.value = numbers.value.map(n => n + 1)
         }
 
+        const append = () => {
+            // numbers.value = [...numbers.value, 0]
+            numbers.value.push(0)
+        }
+
         return {
             numbers,
             msg,
+            append,
             increment_single,
             plus1_each
         }
@@ -56,6 +63,11 @@ ul {
     display: inline-block;
     font-size: 1rem;
     line-height: 1rem;
+
+    margin: 0 5px 5px 0;
+    &:last-child {
+        margin-right: 0;
+    }
 
     &:hover {
         background-color: lightgreen;
