@@ -1,47 +1,36 @@
 <template lang="pug">
-.hello.
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-typescript" target="_blank" rel="noopener">typescript</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex" target="_blank" rel="noopener">vuex</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+.hello
+    h1 {{ msg }}
+
+    button.button(@click="plus1_each") +1 each
+    ul
+        li.number(v-for="(n, $index) in numbers" @click="increment_single($index)") {{ n }}
 </template>
 
 <script lang="ts">
-import {defineComponent, toRefs} from 'vue';
+import {defineComponent, toRefs, ref} from 'vue';
 
 export default defineComponent({
     props: {
         msg: {type: String, required: true}
     },
-    setup(props: {msg: string}) {
+    setup(props: { msg: string }) {
         const {msg} = toRefs(props)
+        const numbers = ref([0, 0, 0, 0, 0])
+
+        const increment_single = (index: number) => {
+            numbers.value[index] = numbers.value[index] + 1
+        }
+
+        const plus1_each = () => {
+            numbers.value = numbers.value.map(n => n + 1)
+        }
 
         return {
-            msg
+            numbers,
+            msg,
+            increment_single,
+            plus1_each
         }
     }
 })
@@ -57,9 +46,39 @@ ul {
     padding: 0;
 }
 
+.button () {
+    border: 1px solid grey;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    user-select: none;
+    -webkit-user-drag: none;
+    display: inline-block;
+    font-size: 1rem;
+    line-height: 1rem;
+
+    &:hover {
+        background-color: lightgreen;
+    }
+
+    &:active {
+        position: relative;
+        top: 1px;
+    }
+}
+
+button {
+    .button();
+}
+
 li {
     display: inline-block;
     margin: 0 10px;
+
+    &.number {
+        width: 100px;
+        .button();
+    }
 }
 
 a {

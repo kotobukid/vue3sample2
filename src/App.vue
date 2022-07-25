@@ -23,10 +23,8 @@ export default defineComponent({
         const inner_content: Ref<string> = ref('')
 
         const setInnerContent = (e: PointerEvent) => {
-            console.log(e)
             // @ts-ignore
-            inner_content.value = e.target ? event!.target!.innerHTML : '';
-            console.log(inner_content)
+            inner_content.value = e!.target!.innerHTML || '';
         }
 
         return {
