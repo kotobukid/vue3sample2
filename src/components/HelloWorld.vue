@@ -5,11 +5,15 @@
     button.button(@click="plus1_each") +1 each
     button.button(@click="append") append 0
     ul
-        li.number(v-for="(n, $index) in numbers" @click="increment_single($index)") {{ n }}
+        li.number(
+            v-for="(n, $index) in numbers"
+            @click="increment_single($index)"
+            :class="n[1] > 0 ? 'plus' : 'minus'"
+        ) {{ n[0] }}
 </template>
 
 <script lang="ts">
-import {defineComponent, toRefs, ref} from 'vue';
+import {defineComponent, toRefs, ref, Ref} from 'vue';
 
 export default defineComponent({
     props: {
@@ -17,19 +21,38 @@ export default defineComponent({
     },
     setup(props: { msg: string }) {
         const {msg} = toRefs(props)
-        const numbers = ref([0, 0, 0, 0, 0])
 
-        const increment_single = (index: number) => {
-            numbers.value[index] = numbers.value[index] + 1
+        const numbers: Ref<[number, number][]> = ref([
+            [0, 1],
+            [0, 1],
+            [0, 1]
+        ] as [number, number][])
+
+        const increment = (index: number) => {
+            numbers.value[index] = increment_single(index)
+        }
+
+        const increment_single = (index: number): [number, number] => {
+            const target: [number, number] = numbers.value[index]
+            target[0] = target[0] + target[1]
+            if (target[0] > 9) {
+                target[1] = -1
+            } else if (target[0] < 1) {
+                target[1] = 1
+            }
+            return target
         }
 
         const plus1_each = () => {
-            numbers.value = numbers.value.map(n => n + 1)
+            numbers.value = numbers.value.map((n, index) => {
+                n = increment_single(index)
+                return n
+            })
         }
 
         const append = () => {
-            // numbers.value = [...numbers.value, 0]
-            numbers.value.push(0)
+            numbers.value = [...numbers.value, [0, 1]]
+            // numbers.value.push([0, 1])
         }
 
         return {
@@ -90,6 +113,14 @@ li {
     &.number {
         width: 100px;
         .button();
+
+        &.plus {
+            background-color: pink;
+        }
+
+        &.minus {
+            background-color: lightblue;
+        }
     }
 }
 
